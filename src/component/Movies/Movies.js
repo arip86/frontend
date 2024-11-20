@@ -1,12 +1,13 @@
 // import {React, useState} from 'react';
-import { useState } from 'react';
+// import { useState } from 'react';
 import { nanoid } from 'nanoid';
 import styles from './Movies.module.css';
 import Movie from '../Movie/Movie';
-import data from '../../utils/constants/data';
+// import data from '../../utils/constants/data';
 
-function Movies(){
-    const [movies, setMovies] = useState(data);
+function Movies(props){
+   //tempat const
+   const {movies, setMovies} = props;
     function handleClick(){
         const movie = {
             id: nanoid(), 
