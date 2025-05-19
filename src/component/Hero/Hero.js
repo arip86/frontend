@@ -1,5 +1,15 @@
 import styles from "./Hero.module.css";
 function Hero(){
+         const [movie, setMovie] = useState({});
+
+    useEffect(() => {
+        async function fetchMovies() {
+            const response = await fetch("https://www.omdbapi.com/?i=tt3896198&apikey=d24c1a9d");
+            const data = await response.json();
+            setMovie(data);
+        }
+        fetchMovies();
+    }, []);
     return(
 <div className={styles.container}>
 <section className={styles.hero}>
