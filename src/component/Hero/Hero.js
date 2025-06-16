@@ -3,47 +3,35 @@ import styles from './Hero.module.css';
 import axios from 'axios';
 
 function Hero() {
-  const [movie, setMovie] = useState(null); // Awalnya null untuk validasi data
+  const [movie, setMovie] = useState({}); // Gunakan objek kosong agar bisa akses properti
 
   useEffect(() => {
     const API_KEY = import.meta.env.VITE_API_KEY;
 
     async function fetchTrendingMovies() {
-      try {
-        const URL = `https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}`;
-        const response = await axios(URL);
-        const firstMovie = response.data.results[0];
-        return firstMovie;
-      } catch (error) {
-        console.error('Error fetching trending movies:', error);
-        return null;
-      }
+      const URL = `https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}`;
+      const response = await axios(URL);
+      return response.data.results[0];
     }
 
     async function fetchDetailMovie() {
       const trendingMovie = await fetchTrendingMovies();
-      if (!trendingMovie) return;
-      try {
-        const id = trendingMovie.id;
-        const params = `?api_key=${API_KEY}&append_to_response=videos`;
-        const URL = `https://api.themoviedb.org/3/movie/${id}${params}`;
-        const response = await axios(URL);
-        setMovie({
-          Title: response.data.title,
-          Genre: response.data.genres.map(g => g.name).join(', '),
-          Plot: response.data.overview,
-          Poster: `https://image.tmdb.org/t/p/w500${response.data.poster_path}`
-        });
-      } catch (error) {
-        console.error('Error fetching movie detail:', error);
-      }
+      const id = trendingMovie.id;
+      const detailURL = `https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&append_to_response=videos`;
+      const response = await axios(detailURL);
+      const data = response.data;
+
+      // Menyesuaikan struktur data agar cocok dengan properti dari OMDB
+      setMovie({
+        Title: data.title,
+        Genre: data.genres,
+        Plot: data.overview,
+        Poster: `https://image.tmdb.org/t/p/w500${data.poster_path}`
+      });
     }
 
     fetchDetailMovie();
   }, []);
-
-  // Cegah error render saat movie belum ada
-  if (!movie) return <div>Loading...</div>;
 
   return (
     <div className={styles.container}>
@@ -69,8 +57,6 @@ function Hero() {
 }
 
 export default Hero;
-
-
 
 
 // import styles from "./Hero.module.css";
